@@ -41,6 +41,7 @@ let triggerCount = 0;
 const triggers = new Map<string, TriggerFn>();
 
 function triggerAll (): void {
+  // @ts-ignore
   [...triggers.values()].forEach((trigger) => trigger(Date.now()));
 }
 

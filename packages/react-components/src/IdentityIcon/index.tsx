@@ -8,7 +8,6 @@ import React, { useCallback, useContext } from 'react';
 import styled from 'styled-components';
 
 import { getSystemIcon } from '@polkadot/apps-config';
-import { ThemeProps } from '@polkadot/react-components/types';
 import { useApi } from '@polkadot/react-hooks';
 import BaseIdentityIcon from '@polkadot/react-identicon';
 import { settings } from '@polkadot/ui-settings';
@@ -65,7 +64,7 @@ function IdentityIcon ({ className = '', prefix, size = 24, theme, value }: Prop
   );
 }
 
-export default React.memo(styled(IdentityIcon)(({ theme }: ThemeProps) => `
+export default React.memo(styled(IdentityIcon)(() => `
   border: 1px solid #ddd;
   border-radius: 50%;
   display: inline-block;

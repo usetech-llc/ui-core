@@ -12,6 +12,6 @@ interface Props {
     withSidebar?: boolean;
 }
 export declare function getParentAccount(value: string): string | undefined;
-declare function AccountName({ children, className, defaultName, label, onClick, override, toggle, value, withSidebar }: Props): React.ReactElement<Props>;
+declare function AccountName({ children, className, defaultName, label, override, toggle, value, withSidebar }: Props): React.ReactElement<Props>;
 declare const _default: React.MemoExoticComponent<import("styled-components").StyledComponent<typeof AccountName, any, {}, never>>;
 export default _default;

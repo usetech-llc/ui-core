@@ -1,25 +1,29 @@
-import { nodeResolve } from '@rollup/plugin-node-resolve'
+// [object Object]
+// SPDX-License-Identifier: Apache-2.0
+
+import markdown from '@jackfranklin/rollup-plugin-markdown';
+import babel from '@rollup/plugin-babel';
 import commonJs from '@rollup/plugin-commonjs';
-import json from '@rollup/plugin-json';
-import i18next from 'rollup-plugin-i18next-conv';
 import image from '@rollup/plugin-image';
-import markdown from '@jackfranklin/rollup-plugin-markdown'
-import typeScript from 'rollup-plugin-typescript2';
-import postcss from 'rollup-plugin-postcss';
+import json from '@rollup/plugin-json';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import del from 'rollup-plugin-delete';
 // import NpmImport from 'less-plugin-npm-import';
 import html from 'rollup-plugin-html';
-import visualizer from 'rollup-plugin-visualizer';
+import i18next from 'rollup-plugin-i18next-conv';
+import postcss from 'rollup-plugin-postcss';
 // import {sizeSnapshot} from 'rollup-plugin-size-snapshot';
-import {terser} from 'rollup-plugin-terser';
-import del from 'rollup-plugin-delete';
-import babel from '@rollup/plugin-babel';
+import { terser } from 'rollup-plugin-terser';
+import typeScript from 'rollup-plugin-typescript2';
+import visualizer from 'rollup-plugin-visualizer';
+
 import pkg from './package.json';
 
-const input = 'packages/index.ts';
+const input = 'packages/index.tsx';
 
 const external = [
-    ...Object.keys(pkg.devDependencies || {}),
-    ...Object.keys(pkg.peerDependencies || {}),
+  ...Object.keys(pkg.devDependencies || {}),
+  ...Object.keys(pkg.peerDependencies || {})
 ];
 
 const plugins = [
@@ -42,24 +46,24 @@ const plugins = [
 ];
 
 export default [
-    {
-        input,
-        output: {
-            file: pkg.module,
-            format: 'esm',
-            sourcemap: true,
-        },
-        plugins,
-        external
+  {
+    external,
+    input,
+    output: {
+      file: pkg.module,
+      format: 'esm',
+      sourcemap: true
     },
-    {
-        input,
-        output: {
-            file: pkg.main,
-            format: 'cjs',
-            sourcemap: true,
-        },
-        plugins,
-        external
-    }
+    plugins
+  },
+  {
+    external,
+    input,
+    output: {
+      file: pkg.main,
+      format: 'cjs',
+      sourcemap: true
+    },
+    plugins
+  }
 ];
