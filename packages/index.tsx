@@ -7,7 +7,7 @@ import React from 'react';
 
 import Accounts from '@polkadot/app-accounts';
 
-const AccountsWrapper = (props: AppProps): JSX.Element => (
+const AccountsWrapper = (props: AppProps): React.ReactElement<AppProps> => (
   <div className='accounts-wrapper'>
     <Accounts
       {...props}
@@ -15,4 +15,4 @@ const AccountsWrapper = (props: AppProps): JSX.Element => (
   </div>
 );
 
-export default AccountsWrapper;
+export default React.memo(AccountsWrapper);
