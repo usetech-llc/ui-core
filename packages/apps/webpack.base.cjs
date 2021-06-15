@@ -7,6 +7,8 @@ const fs = require('fs');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
+const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
 const webpack = require('webpack');
 
 const findPackages = require('../../scripts/findPackages.cjs');
@@ -22,6 +24,10 @@ function mapChunks (name, regs, inc) {
     }
   }), {});
 }
+
+const deps = require('../../package.json').dependencies;
+const devDeps = require('../../package.json').devDependencies;
+const resDeps = require('../../package.json').resolutions;
 
 function createWebpack (context, mode = 'production') {
   const pkgJson = require(path.join(context, 'package.json'));
@@ -173,10 +179,35 @@ function createWebpack (context, mode = 'production') {
           WS_URL: JSON.stringify(process.env.WS_URL)
         }
       }),
-      new webpack.optimize.SplitChunksPlugin(),
       new MiniCssExtractPlugin({
         filename: '[name].[contenthash:8].css'
-      })
+      }),
+      new WebpackManifestPlugin({
+        fileName: 'asset-manifest.json',
+        generate: (seed, files, entrypoints) => {
+          const manifestFiles = files.reduce((manifest, file) => {
+            manifest[file.name] = file.path;
+
+            return manifest;
+          }, seed);
+          const entrypointFiles = entrypoints.main.filter((fileName) => !fileName.endsWith('.map'));
+
+          return {
+            entrypoints: entrypointFiles,
+            files: manifestFiles
+          };
+        },
+        publicPath: 'localhost:7000/'
+      }),
+      new ModuleFederationPlugin({
+        name: 'uiCore',
+        filename: 'remoteEntry.js',
+        exposes: {
+          './TestModule': './src/TestModule',
+        },
+        library: { type: 'var', name: 'uiCore' },
+        shared: {},
+      }),
     ].concat(plugins),
     resolve: {
       alias: {
