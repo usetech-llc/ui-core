@@ -1,12 +1,14 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { Route, Routes } from './ApiWrapper';
 import './apps.scss';
 
 import type { BareProps as Props, ThemeDef } from '@polkadot/react-components/types';
 
 import React, { Suspense, useContext, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import type { TFunction } from 'i18next';
 import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import { ThemeContext } from 'styled-components';
@@ -17,8 +19,6 @@ import Status from '@polkadot/apps/Status';
 import { useTranslation } from '@polkadot/apps/translate';
 import { getSystemChainColor } from '@polkadot/apps-config';
 import envConfig from '@polkadot/apps-config/envConfig';
-import createRoutes from '@polkadot/apps-routing';
-import { Route } from '@polkadot/apps-routing/types';
 import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
@@ -45,7 +45,14 @@ const NOT_FOUND: Route = {
   text: 'Unknown'
 };
 
-function Apps ({ className = '' }: Props): React.ReactElement<Props> {
+export interface AppProps {
+  children?: React.ReactNode;
+  className?: string;
+  createRoutes: (t: TFunction) => Routes;
+  style?: React.CSSProperties;
+}
+
+function Apps ({ className = '', createRoutes }: AppProps): React.ReactElement<Props> {
   const location = useLocation();
   const { t } = useTranslation();
   const theme = useContext<ThemeDef>(ThemeContext);

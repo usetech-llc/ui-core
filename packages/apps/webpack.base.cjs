@@ -131,7 +131,7 @@ function createWebpack (context, mode = 'production') {
       __filename: false
     },
     optimization: {
-      minimize: mode === 'production',
+      minimize: mode !== 'production',
       splitChunks: {
         cacheGroups: {
           ...mapChunks('robohash', [
@@ -200,13 +200,23 @@ function createWebpack (context, mode = 'production') {
         publicPath: 'localhost:7000/'
       }),
       new ModuleFederationPlugin({
-        name: 'uiCore',
-        filename: 'remoteEntry.js',
         exposes: {
-          './TestModule': './src/TestModule',
+          './ApiWrapper': './src/ApiWrapper',
+          './TopBar': './src/TopBar'
         },
+        filename: '[name].js',
         library: { type: 'var', name: 'uiCore' },
-        shared: {},
+        name: 'uiCore',
+        shared: mode === 'production' ? {
+          react: {
+            singleton: true,
+            requiredVersion: devDeps.react,
+          },
+          "react-dom": {
+            singleton: true,
+            requiredVersion: devDeps["react-dom"],
+          }
+        } : {},
       }),
     ].concat(plugins),
     resolve: {
