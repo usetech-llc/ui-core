@@ -205,19 +205,21 @@ function createWebpack (context, mode = 'production') {
           './TopBar': './src/TopBar'
         },
         filename: '[name].js',
-        library: { type: 'var', name: 'uiCore' },
+        library: { name: 'uiCore', type: 'var' },
         name: 'uiCore',
-        shared: mode === 'production' ? {
+        shared: {
           react: {
-            singleton: true,
+            eager: true,
             requiredVersion: devDeps.react,
+            singleton: true
           },
-          "react-dom": {
-            singleton: true,
-            requiredVersion: devDeps["react-dom"],
+          'react-dom': {
+            eager: true,
+            requiredVersion: devDeps['react-dom'],
+            singleton: true
           }
-        } : {},
-      }),
+        }
+      })
     ].concat(plugins),
     resolve: {
       alias: {

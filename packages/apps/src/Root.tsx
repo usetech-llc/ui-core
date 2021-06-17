@@ -4,6 +4,7 @@
 import type { KeyringStore } from '@polkadot/ui-keyring/types';
 
 import React from 'react';
+
 import ApiWrapper from '@polkadot/apps/ApiWrapper';
 import create from '@polkadot/apps-routing';
 

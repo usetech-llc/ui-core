@@ -1,34 +1,29 @@
 // Copyright 2017-2021 @polkadot/apps authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ThemeDef } from '@polkadot/react-components/types';
-import type { KeyringStore } from '@polkadot/ui-keyring/types';
-
 // setup these right at front
 import 'semantic-ui-css/semantic.min.css';
 import '@polkadot/react-components/i18n';
-
 import './initSettings';
+
+import type { IconName } from '@fortawesome/fontawesome-svg-core';
+import type { TFunction } from 'i18next';
+import type { ThemeDef } from '@polkadot/react-components/types';
+import type { KeyringStore } from '@polkadot/ui-keyring/types';
+
 import React, { Suspense, useEffect, useState } from 'react';
 import { HashRouter } from 'react-router-dom';
-import type { TFunction } from 'i18next';
 import { ThemeProvider } from 'styled-components';
 
 import { Api } from '@polkadot/react-api';
 import Queue from '@polkadot/react-components/Status/Queue';
-import type { IconName } from '@fortawesome/fontawesome-svg-core';
+import { AppProps, BareProps } from '@polkadot/react-components/types';
 import { BlockAuthors, Events } from '@polkadot/react-query';
 import { settings } from '@polkadot/ui-settings';
 
 import Apps from './Apps';
 import { Themes, uniqueTheme } from './themes';
 import WindowDimensions from './WindowDimensions';
-import { AppProps, BareProps } from "@polkadot/react-components/types";
-
-export interface RouteProps extends AppProps, BareProps {
-  account?: string;
-  location: any;
-}
 
 export interface RouteProps extends AppProps, BareProps {
   account?: string;
