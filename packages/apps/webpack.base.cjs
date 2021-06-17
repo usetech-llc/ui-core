@@ -197,17 +197,18 @@ function createWebpack (context, mode = 'production') {
             files: manifestFiles
           };
         },
-        publicPath: 'localhost:7000/'
+        publicPath: 'localhost:3000/'
       }),
       new ModuleFederationPlugin({
         exposes: {
-          './ApiWrapper': './src/ApiWrapper',
-          './TopBar': './src/TopBar'
+          './ReactApi': './src/ReactApi'
         },
         filename: '[name].js',
-        library: { name: 'uiCore', type: 'var' },
         name: 'uiCore',
         shared: {
+          ...resDeps,
+          ...deps,
+          ...devDeps,
           react: {
             eager: true,
             requiredVersion: devDeps.react,
