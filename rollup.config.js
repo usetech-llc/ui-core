@@ -8,9 +8,10 @@ import image from '@rollup/plugin-image';
 import json from '@rollup/plugin-json';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import del from 'rollup-plugin-delete';
-// import NpmImport from 'less-plugin-npm-import';
 import html from 'rollup-plugin-html';
 import i18next from 'rollup-plugin-i18next-conv';
+// import NpmImport from 'less-plugin-npm-import';
+import resolve from 'rollup-plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 // import {sizeSnapshot} from 'rollup-plugin-size-snapshot';
 import { terser } from 'rollup-plugin-terser';
@@ -21,6 +22,8 @@ import pkg from './package.json';
 
 const input = 'packages/index.ts';
 
+const extensions = ['.js', '.jsx', '.ts', '.tsx'];
+
 const external = [
   ...Object.keys(pkg.devDependencies || {}),
   ...Object.keys(pkg.resolutions || {}),
@@ -29,6 +32,10 @@ const external = [
 
 const plugins = [
   nodeResolve(),
+  resolve({
+    extensions,
+    mainFields: ['module', 'main', 'jsnext:main', 'browser']
+  }),
   babel({
     exclude: 'node_modules/!**'
   }),

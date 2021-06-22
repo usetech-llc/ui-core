@@ -6,7 +6,6 @@
   "types": "./dist/packages/index.d.ts",
   "description": "Ui core components for unique apps",
   "author": "Jaco Greeff <jacogr@gmail.com>, Konstantin Pozdnikin <kpozdnikin@usetech.ru>",
-  "private": false,
   "version": "0.1.0",
   "license": "Apache-2",
   "homepage": ".",
@@ -131,6 +130,7 @@
     "protobufjs": "^6.10.2",
     "react-images-uploading": "^3.1.2",
     "react-infinite-scroller": "^1.2.4",
+    "rollup-plugin-node-resolve": "^5.2.0",
     "style-loader": "^2.0.0",
     "thread-loader": "^3.0.1",
     "xstate": "^4.15.0"
