@@ -15,8 +15,8 @@ import postcss from 'rollup-plugin-postcss';
 // import {sizeSnapshot} from 'rollup-plugin-size-snapshot';
 import { terser } from 'rollup-plugin-terser';
 import typeScript from 'rollup-plugin-typescript2';
-import visualizer from 'rollup-plugin-visualizer';
 
+// import visualizer from 'rollup-plugin-visualizer';
 import pkg from './package.json';
 
 const input = 'packages/index.ts';
@@ -42,8 +42,7 @@ const plugins = [
   typeScript({ tsconfig: 'tsconfig.json' }), // подключение typescript
   // sizeSnapshot(), // напишет в консоль размер бандла
   terser(), // минификатор совместимый с ES2015+, форк и наследник UglifyES
-  commonJs(), // подключение модулей commonjs
-  visualizer() // анализатор бандла
+  commonJs() // подключение модулей commonjs
 ];
 
 export default [
