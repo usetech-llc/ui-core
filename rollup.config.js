@@ -11,7 +11,7 @@ import del from 'rollup-plugin-delete';
 import html from 'rollup-plugin-html';
 import i18next from 'rollup-plugin-i18next-conv';
 // import NpmImport from 'less-plugin-npm-import';
-import resolve from 'rollup-plugin-node-resolve';
+// import resolve from 'rollup-plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 // import {sizeSnapshot} from 'rollup-plugin-size-snapshot';
 import { terser } from 'rollup-plugin-terser';
@@ -31,8 +31,7 @@ const external = [
 ];
 
 const plugins = [
-  nodeResolve(),
-  resolve({
+  nodeResolve({
     extensions,
     mainFields: ['module', 'main', 'jsnext:main', 'browser']
   }),
