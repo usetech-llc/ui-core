@@ -3,9 +3,7 @@
 
 import './apps.scss';
 
-import type { TFunction } from 'i18next';
 import type { BareProps as Props, ThemeDef } from '@polkadot/react-components/types';
-import type { Route, Routes } from './ApiWrapper';
 
 import React, { Suspense, useContext, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -19,6 +17,8 @@ import Status from '@polkadot/apps/Status';
 import { useTranslation } from '@polkadot/apps/translate';
 import { getSystemChainColor } from '@polkadot/apps-config';
 import envConfig from '@polkadot/apps-config/envConfig';
+import createRoutes from '@polkadot/apps-routing';
+import { Route } from '@polkadot/apps-routing/types';
 import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
@@ -45,14 +45,7 @@ const NOT_FOUND: Route = {
   text: 'Unknown'
 };
 
-export interface AppProps {
-  children?: React.ReactNode;
-  className?: string;
-  createRoutes: (t: TFunction) => Routes;
-  style?: React.CSSProperties;
-}
-
-function Apps ({ className = '', createRoutes }: AppProps): React.ReactElement<Props> {
+function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   const location = useLocation();
   const { t } = useTranslation();
   const theme = useContext<ThemeDef>(ThemeContext);
@@ -71,12 +64,10 @@ function Apps ({ className = '', createRoutes }: AppProps): React.ReactElement<P
 
       return createRoutes(t).find((route) => !!(route && app.startsWith(route.name))) || NOT_FOUND;
     },
-    [createRoutes, location, t]
+    [location, t]
   );
 
   const missingApis = findMissingApis(api, needsApi);
-
-  console.log('api', api, 'isApiConnected', isApiConnected, 'isApiReady', isApiReady, 'systemChain', systemChain, 'systemName', systemName);
 
   return (
     <>

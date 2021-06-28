@@ -21,7 +21,7 @@ interface State {
 }
 
 // NOTE: This is the only way to do an error boundary, via extend
-class ErrorBoundary extends React.Component<Props> {
+class ErrorBoundary extends React.Component<Props, State> {
   state: State = { error: null, prevTrigger: null };
 
   static getDerivedStateFromError (error: Error): Partial<State> {

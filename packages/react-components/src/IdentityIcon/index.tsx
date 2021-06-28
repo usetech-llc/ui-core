@@ -8,6 +8,7 @@ import React, { useCallback, useContext } from 'react';
 import styled from 'styled-components';
 
 import { getSystemIcon } from '@polkadot/apps-config';
+import { ThemeProps } from '@polkadot/react-components/types';
 import { useApi } from '@polkadot/react-hooks';
 import BaseIdentityIcon from '@polkadot/react-identicon';
 import { settings } from '@polkadot/ui-settings';
@@ -34,9 +35,6 @@ function isCodec (value?: AccountId | AccountIndex | Address | string | Uint8Arr
 
 function IdentityIcon ({ className = '', prefix, size = 24, theme, value }: Props): React.ReactElement<Props> {
   const { isEthereum, systemName } = useApi();
-
-  console.log('isEthereum', isEthereum, 'systemName', systemName);
-
   const { t } = useTranslation();
   const { queueAction } = useContext(StatusContext);
   const thisTheme = theme || getIdentityTheme(systemName);
@@ -67,7 +65,7 @@ function IdentityIcon ({ className = '', prefix, size = 24, theme, value }: Prop
   );
 }
 
-export default React.memo(styled(IdentityIcon)(() => `
+export default React.memo(styled(IdentityIcon)(({ theme }: ThemeProps) => `
   border: 1px solid #ddd;
   border-radius: 50%;
   display: inline-block;

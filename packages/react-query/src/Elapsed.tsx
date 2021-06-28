@@ -24,7 +24,6 @@ let lastId = 0;
 function tick (): void {
   lastNow = Date.now();
 
-  // @ts-ignore
   for (const ticker of tickers.values()) {
     ticker(lastNow);
   }

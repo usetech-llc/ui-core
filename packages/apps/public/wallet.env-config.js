@@ -3,10 +3,11 @@
 
 window.processEnv = {
   canAddCollections: true,
-  canCreateCollection: true,
-  canCreateToken: true,
-  canEditCollection: true,
-  canEditToken: true,
+  canCreateCollection: false,
+  canCreateToken: false,
+  canEditCollection: false,
+  canEditToken: false,
+  commission: 10,
   contractAddress: '5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72',
   escrowAddress: '5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU',
   faviconPath: 'favicons/marketplace',
@@ -14,7 +15,8 @@ window.processEnv = {
   maxGas: 1000000000000,
   quoteId: 2,
   showMarketActions: false,
-  uniqueCollectionId: '2',
+  uniqueCollectionIds: ['23', '25'],
   value: 0,
-  walletMode: true
+  walletMode: true,
+  wssUrl: 'wss://testnet2.uniquenetwork.io'
 };
