@@ -7,24 +7,31 @@ import commonJs from '@rollup/plugin-commonjs';
 import image from '@rollup/plugin-image';
 import json from '@rollup/plugin-json';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import typeScript from '@rollup/plugin-typescript';
 import del from 'rollup-plugin-delete';
 import html from 'rollup-plugin-html';
 import i18next from 'rollup-plugin-i18next-conv';
 import postcss from 'rollup-plugin-postcss';
 // import {sizeSnapshot} from 'rollup-plugin-size-snapshot';
 import { terser } from 'rollup-plugin-terser';
-import typeScript from '@rollup/plugin-typescript';
 
 import pkg from './package.json';
+
+const findPackages = require('./scripts/findPackages.cjs');
 
 const input = 'packages/index.ts';
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
+const allPackages = findPackages().map((pack) => pack.name);
+
+console.log('allPackages', allPackages);
+
 const external = [
   ...Object.keys(pkg.devDependencies || {}),
   ...Object.keys(pkg.resolutions || {}),
-  ...Object.keys(pkg.dependencies || {})
+  ...Object.keys(pkg.dependencies || {}),
+  ...allPackages
 ];
 
 const plugins = [
