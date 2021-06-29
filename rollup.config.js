@@ -13,7 +13,7 @@ import i18next from 'rollup-plugin-i18next-conv';
 import postcss from 'rollup-plugin-postcss';
 // import {sizeSnapshot} from 'rollup-plugin-size-snapshot';
 import { terser } from 'rollup-plugin-terser';
-import typeScript from 'rollup-plugin-typescript2';
+import typeScript from '@rollup/plugin-typescript';
 
 import pkg from './package.json';
 
@@ -42,7 +42,9 @@ const plugins = [
   image(),
   i18next(),
   markdown(),
-  typeScript({ tsconfig: 'tsconfig.json' }),
+  typeScript({
+    tsconfig: 'tsconfig.json'
+  }),
   // sizeSnapshot(), // напишет в консоль размер бандла
   terser(),
   commonJs()
