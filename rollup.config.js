@@ -15,6 +15,7 @@ import postcss from 'rollup-plugin-postcss';
 // import {sizeSnapshot} from 'rollup-plugin-size-snapshot';
 import { terser } from 'rollup-plugin-terser';
 
+// import ts from 'rollup-plugin-ts';
 import pkg from './package.json';
 
 const input = 'packages/index.ts';
@@ -39,7 +40,8 @@ const external = [
 const plugins = [
   nodeResolve({
     extensions,
-    mainFields: ['module', 'main', 'jsnext:main', 'browser']
+    mainFields: ['module', 'main', 'jsnext:main', 'browser'],
+    skip: external
   }),
   babel({
     exclude: 'node_modules/!**'
@@ -51,7 +53,11 @@ const plugins = [
   image(),
   i18next(),
   markdown(),
+  // ts({}),
   typeScript({
+    declaration: true,
+    declarationDir: 'dist/',
+    rootDir: 'packages/',
     tsconfig: 'tsconfig.json'
   }),
   // sizeSnapshot(), // напишет в консоль размер бандла

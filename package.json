@@ -73,6 +73,7 @@
     "@pinata/sdk": "^1.1.23",
     "@polkadot/dev": "^0.62.42",
     "@polkadot/ts": "^0.3.90",
+    "@polkadot/wasm-crypto": "^4.0.2",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-image": "^2.0.6",
@@ -104,6 +105,7 @@
     "rollup-plugin-i18next-conv": "^5.1.0",
     "rollup-plugin-postcss": "^4.0.0",
     "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-ts": "^1.4.0",
     "rollup-plugin-typescript2": "^0.30.0",
     "rollup-plugin-visualizer": "^5.5.0",
     "sass": "^1.26.8",
@@ -117,8 +119,7 @@
     "typescript": "^4.3.4",
     "webpack": "^5.38.1",
     "webpack-cli": "^4.7.0",
-    "webpack-manifest-plugin": "^3.0.0",
-    "@polkadot/wasm-crypto": "^4.0.2"
+    "webpack-manifest-plugin": "^3.0.0"
   },
   "dependencies": {
     "@jackfranklin/rollup-plugin-markdown": "^0.3.0",
