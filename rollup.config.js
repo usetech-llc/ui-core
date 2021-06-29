@@ -17,21 +17,23 @@ import { terser } from 'rollup-plugin-terser';
 
 import pkg from './package.json';
 
-const findPackages = require('./scripts/findPackages.cjs');
-
 const input = 'packages/index.ts';
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
-
-const allPackages = findPackages().map((pack) => pack.name);
-
-console.log('allPackages', allPackages);
 
 const external = [
   ...Object.keys(pkg.devDependencies || {}),
   ...Object.keys(pkg.resolutions || {}),
   ...Object.keys(pkg.dependencies || {}),
-  ...allPackages
+  '@polkadot/ui-keyring',
+  '@polkadot/wasm-crypto',
+  '@polkadot/keyring',
+  '@polkadot/hw-ledger',
+  '@polkadot/types-known',
+  '@polkadot/api-derive',
+  '@polkadot/rpc-core',
+  '@polkadot/types-known',
+  '@polkadot/react-identicon'
 ];
 
 const plugins = [
