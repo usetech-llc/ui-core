@@ -44,7 +44,8 @@ const plugins = [
     skip: external
   }),
   babel({
-    exclude: 'node_modules/!**'
+    babelHelpers: 'bundled',
+    exclude: ['node_modules/!**', 'jest/!**', 'docker/!**', 'cypress/!**', 'scripts/!**']
   }),
   del({ targets: ['dist/*'] }),
   html(),
@@ -58,7 +59,7 @@ const plugins = [
     declaration: true,
     declarationDir: 'dist/',
     rootDir: 'packages/',
-    tsconfig: 'tsconfig.json'
+    tsconfig: './tsconfig.json'
   }),
   // sizeSnapshot(), // напишет в консоль размер бандла
   terser(),
@@ -80,9 +81,11 @@ export default [
     external,
     input,
     output: {
-      file: pkg.main,
+      dir: './dist',
+      // file: pkg.main,
       format: 'umd',
-      name: 'uiCore',
+      inlineDynamicImports: true,
+      name: './dist/uiCore',
       sourcemap: true
     },
     plugins

@@ -2,15 +2,15 @@
   "extends": "@polkadot/dev/config/tsconfig.json",
   "exclude": [
     "build/**/*",
-    "**/build/**/*"
+    "**/build/**/*",
+    "jest/**/*",
+    "scripts/**/*"
   ],
   "compilerOptions": {
     "jsx": "react",
     "baseUrl": ".",
-    "declaration": true,
-    "declarationDir": "dist",
     "emitDeclarationOnly": true,
-    "outDir": "dist/lib",
+    "outDir": "dist",
     "lib": ["es2015", "es2016", "es2017", "dom"],
     "sourceMap": true,
     "paths": {
