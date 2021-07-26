@@ -5,6 +5,8 @@ import type { KeyringOption$Type, KeyringOptions, KeyringSectionOption, KeyringS
 import type { Option } from './types';
 
 import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { Menu } from 'semantic-ui-react';
 import store from 'store';
 
 import { withMulti, withObservable } from '@polkadot/react-api/hoc';
@@ -13,7 +15,6 @@ import { createOptionItem } from '@polkadot/ui-keyring/options/item';
 import { isNull, isUndefined } from '@polkadot/util';
 
 import Dropdown from '../Dropdown';
-import Static from '../Static';
 import { getAddressName } from '../util';
 import addressToAddress from '../util/toAddress';
 import createHeader from './createHeader';
@@ -117,7 +118,7 @@ function setLastValue (type: KeyringOption$Type = DEFAULT_TYPE, value: string): 
 }
 
 class InputAddress extends React.PureComponent<Props, State> {
-  public state: State = {};
+  public override state: State = {};
 
   public static getDerivedStateFromProps ({ type, value }: Props, { lastValue }: State): Pick<State, never> | null {
     try {
@@ -132,7 +133,7 @@ class InputAddress extends React.PureComponent<Props, State> {
     }
   }
 
-  public render (): React.ReactNode {
+  public override render (): React.ReactNode {
     const { className = '', defaultValue, help, hideAddress = false, isDisabled = false, isError, isMultiple, label, labelExtra, options, optionsAll, placeholder, type = DEFAULT_TYPE, withEllipsis, withLabel } = this.props;
     const hasOptions = (options && options.length !== 0) || (optionsAll && Object.keys(optionsAll[type]).length !== 0);
 
@@ -141,13 +142,15 @@ class InputAddress extends React.PureComponent<Props, State> {
       // This is nasty, but since this things is non-functional, there is not much
       // we can do (well, wrap it, however that approach is deprecated here)
       return (
-        <Static
-          className={className}
-          help={help}
-          label={label}
-        >
-          No accounts are available for selection.
-        </Static>
+
+        <Menu.Item
+          active={location.pathname === '/accounts'}
+          as={NavLink}
+          className='crateAccountBtn'
+          name='Create or connect account'
+          to='/accounts'
+        />
+
       );
     }
 
