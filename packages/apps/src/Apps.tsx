@@ -3,12 +3,10 @@
 
 import './apps.scss';
 
-import type { TFunction } from 'i18next';
 import type { BareProps as Props, ThemeDef } from '@polkadot/react-components/types';
-import type { Route, Routes } from './ApiWrapper';
 
 import React, { Suspense, useContext, useMemo, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import { ThemeContext } from 'styled-components';
@@ -19,11 +17,14 @@ import Status from '@polkadot/apps/Status';
 import { useTranslation } from '@polkadot/apps/translate';
 import { getSystemChainColor } from '@polkadot/apps-config';
 import envConfig from '@polkadot/apps-config/envConfig';
+import createRoutes from '@polkadot/apps-routing';
+import { Route } from '@polkadot/apps-routing/types';
 import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
 import Signer from '@polkadot/react-signer';
 
+import infoSvg from '../src/images/info.svg';
 import ConnectingOverlay from './overlays/Connecting';
 import BalancesHeader from './BalancesHeader';
 import ScrollToTop from './ScrollToTop';
@@ -45,14 +46,7 @@ const NOT_FOUND: Route = {
   text: 'Unknown'
 };
 
-export interface AppProps {
-  children?: React.ReactNode;
-  className?: string;
-  createRoutes: (t: TFunction) => Routes;
-  style?: React.CSSProperties;
-}
-
-function Apps ({ className = '', createRoutes }: AppProps): React.ReactElement<Props> {
+function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   const location = useLocation();
   const { t } = useTranslation();
   const theme = useContext<ThemeDef>(ThemeContext);
@@ -71,12 +65,11 @@ function Apps ({ className = '', createRoutes }: AppProps): React.ReactElement<P
 
       return createRoutes(t).find((route) => !!(route && app.startsWith(route.name))) || NOT_FOUND;
     },
-    [createRoutes, location, t]
+    [location, t]
   );
 
   const missingApis = findMissingApis(api, needsApi);
-
-  console.log('api', api, 'isApiConnected', isApiConnected, 'isApiReady', isApiReady, 'systemChain', systemChain, 'systemName', systemName);
+  const currentLocation = location.pathname.slice(1) === 'accounts';
 
   return (
     <>
@@ -97,6 +90,22 @@ function Apps ({ className = '', createRoutes }: AppProps): React.ReactElement<P
             )
             : (
               <>
+                {(!account && !currentLocation) && (
+                  <div className='no-account'>
+                    <div className='error-info-svg'>
+                      <img src = {String(infoSvg)}/>
+                    </div>
+                    <div className='error-message-info'>
+                      <div>
+                        <p> Some features are currently hidden and will only become available once you connect your wallet.  </p>
+                        <p> You can create new or add your existing substrate account on the
+                          <Link to='accounts' > <span> account page</span> </Link >
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                )}
                 <Suspense fallback='...'>
                   <ErrorBoundary trigger={name}>
                     {missingApis.length
@@ -152,6 +161,12 @@ function Apps ({ className = '', createRoutes }: AppProps): React.ReactElement<P
                                       as={NavLink}
                                       name='accounts'
                                       to='/accounts'
+                                    />
+                                    <Menu.Item
+                                      active={location.pathname === '/faq'}
+                                      as={NavLink}
+                                      name='FAQ'
+                                      to='/faq'
                                     />
                                   </>
                                 )}

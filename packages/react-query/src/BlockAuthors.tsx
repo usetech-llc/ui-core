@@ -44,12 +44,10 @@ function BlockAuthorsBase ({ children }: Props): React.ReactElement<Props> {
 
       // subscribe to all validators
       api.query.session && api.query.session.validators((validatorIds): void => {
-        // @ts-ignore
         setValidators(validatorIds.map((validatorId) => validatorId.toString()));
       }).catch(console.error);
 
       // subscribe to new headers
-      // @ts-ignore
       api.derive.chain.subscribeNewHeads((lastHeader): void => {
         if (lastHeader?.number) {
           const blockNumber = lastHeader.number.unwrap();
@@ -85,7 +83,6 @@ function BlockAuthorsBase ({ children }: Props): React.ReactElement<Props> {
 
   useEffect((): void => {
     if (queryPoints) {
-      // @ts-ignore
       const entries = [...queryPoints.individual.entries()]
         .map(([accountId, points]) => [accountId.toString(), formatNumber(points)]);
       const current = Object.keys(eraPoints);

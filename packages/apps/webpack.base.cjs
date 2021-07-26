@@ -7,8 +7,6 @@ const fs = require('fs');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
-const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
 const webpack = require('webpack');
 
 const findPackages = require('../../scripts/findPackages.cjs');
@@ -24,10 +22,6 @@ function mapChunks (name, regs, inc) {
     }
   }), {});
 }
-
-const deps = require('../../package.json').dependencies;
-const devDeps = require('../../package.json').devDependencies;
-const resDeps = require('../../package.json').resolutions;
 
 function createWebpack (context, mode = 'production') {
   const pkgJson = require(path.join(context, 'package.json'));
@@ -131,7 +125,7 @@ function createWebpack (context, mode = 'production') {
       __filename: false
     },
     optimization: {
-      minimize: mode !== 'production',
+      minimize: mode === 'production',
       splitChunks: {
         cacheGroups: {
           ...mapChunks('robohash', [
@@ -179,47 +173,9 @@ function createWebpack (context, mode = 'production') {
           WS_URL: JSON.stringify(process.env.WS_URL)
         }
       }),
+      new webpack.optimize.SplitChunksPlugin(),
       new MiniCssExtractPlugin({
         filename: '[name].[contenthash:8].css'
-      }),
-      new WebpackManifestPlugin({
-        fileName: 'asset-manifest.json',
-        generate: (seed, files, entrypoints) => {
-          const manifestFiles = files.reduce((manifest, file) => {
-            manifest[file.name] = file.path;
-
-            return manifest;
-          }, seed);
-          const entrypointFiles = entrypoints.main.filter((fileName) => !fileName.endsWith('.map'));
-
-          return {
-            entrypoints: entrypointFiles,
-            files: manifestFiles
-          };
-        },
-        publicPath: 'localhost:3000/'
-      }),
-      new ModuleFederationPlugin({
-        exposes: {
-          './ReactApi': './src/ReactApi'
-        },
-        filename: '[name].js',
-        name: 'uiCore',
-        shared: {
-          ...resDeps,
-          ...deps,
-          ...devDeps,
-          react: {
-            eager: true,
-            requiredVersion: devDeps.react,
-            singleton: true
-          },
-          'react-dom': {
-            eager: true,
-            requiredVersion: devDeps['react-dom'],
-            singleton: true
-          }
-        }
       })
     ].concat(plugins),
     resolve: {
