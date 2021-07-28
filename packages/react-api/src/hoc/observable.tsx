@@ -23,14 +23,14 @@ export default function withObservable<T, P> (observable: Observable<P>, { callO
     class WithObservable extends React.Component<any, State> {
       private isActive = true;
 
-      public override state: State = {
+      public state: State = {
         callResult: undefined,
         callUpdated: false,
         callUpdatedAt: 0,
         subscriptions: []
       };
 
-      public override componentDidMount (): void {
+      public componentDidMount (): void {
         this.setState({
           subscriptions: [
             observable
@@ -44,7 +44,7 @@ export default function withObservable<T, P> (observable: Observable<P>, { callO
         });
       }
 
-      public override componentWillUnmount (): void {
+      public componentWillUnmount (): void {
         this.isActive = false;
         this.state.subscriptions.forEach((subscription): void =>
           subscription.unsubscribe()
@@ -69,7 +69,7 @@ export default function withObservable<T, P> (observable: Observable<P>, { callO
         }
       }
 
-      public override render (): React.ReactNode {
+      public render (): React.ReactNode {
         const { children } = this.props;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { callResult, callUpdated, callUpdatedAt } = this.state;
