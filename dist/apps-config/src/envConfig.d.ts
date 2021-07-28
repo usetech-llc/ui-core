@@ -6,10 +6,12 @@ export declare type EnvConfigType = {
     canEditToken: boolean;
     commission: 10;
     contractAddress: string;
+    decimals: number;
     escrowAddress: string;
     faviconPath: string;
     kusamaDecimals: number;
     maxGas: number;
+    minPrice: number;
     quoteId: number;
     showMarketActions: boolean;
     uniqueCollectionIds: string[];

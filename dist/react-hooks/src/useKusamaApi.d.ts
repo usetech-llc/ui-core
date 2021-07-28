@@ -4,6 +4,7 @@ import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
 interface UseKusamaApiInterface {
     formatKsmBalance: (balance: BN | undefined) => string;
     getKusamaBalance: () => void;
+    getKusamaTransferFee: (recipient: string, value: BN) => Promise<BN | null>;
     kusamaApi: ApiPromise | undefined;
     kusamaBalance: BalanceInterface | undefined;
     kusamaTransfer: (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => void;
