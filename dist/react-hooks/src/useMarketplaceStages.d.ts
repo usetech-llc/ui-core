@@ -12,6 +12,7 @@ export interface MarketplaceStagesInterface {
     error: string | null;
     formatKsmBalance: (value: BN | undefined) => string;
     getFee: (price: BN) => BN;
+    getKusamaTransferFee: (recipient: string, value: BN) => Promise<BN | null>;
     kusamaBalance: BalanceInterface | undefined;
     saleFee: BN | undefined;
     sendCurrentUserAction: (action: UserActionType) => void;
@@ -23,6 +24,7 @@ export interface MarketplaceStagesInterface {
         owner: string;
         price: BN;
     } | undefined;
+    tokenDepositor: string | undefined;
     tokenInfo: TokenDetailsInterface | undefined;
     tokenPriceForSale: number | undefined;
     transferStep: number;

@@ -18,5 +18,5 @@ interface UseSchemaInterface {
     } | null;
     tokenUrl: string;
 }
-export declare function useSchema(account: string, collectionId: string, tokenId: string | number): UseSchemaInterface;
+export declare function useSchema(account: string | undefined, collectionId: string, tokenId: string | number): UseSchemaInterface;
 export {};
