@@ -107,3 +107,4 @@ export { default as TextArea } from './TextArea';
 export { default as WithdrawModal } from './WithdrawModal';
 
 export { default as media } from './media';
+export { ActionStatus } from './Status/types';
