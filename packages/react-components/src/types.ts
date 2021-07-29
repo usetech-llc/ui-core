@@ -5,9 +5,9 @@ import type { IconName } from '@fortawesome/fontawesome-svg-core';
 import type { WithTranslation } from 'react-i18next';
 import type { SubmittableExtrinsic } from '@polkadot/api/types';
 import type { Abi } from '@polkadot/api-contract';
-import type { ActionStatus } from '@polkadot/react-components/Status/types';
+import type { ActionStatus, TxCallback, TxFailedCallback } from '@polkadot/react-components/Status/types';
 import type { AccountId, Index } from '@polkadot/types/interfaces';
-import type { TxCallback, TxFailedCallback } from './Status/types';
+
 
 export interface BareProps {
   children?: React.ReactNode;
