@@ -8,7 +8,6 @@ import type { Abi } from '@polkadot/api-contract';
 import type { ActionStatus, TxCallback, TxFailedCallback } from '@polkadot/react-components/Status/types';
 import type { AccountId, Index } from '@polkadot/types/interfaces';
 
-
 export interface BareProps {
   children?: React.ReactNode;
   className?: string;
