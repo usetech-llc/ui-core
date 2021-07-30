@@ -105,5 +105,6 @@ export { default as VoteAccount } from './VoteAccount';
 export { default as VoteValue } from './VoteValue';
 export { default as TextArea } from './TextArea';
 export { default as WithdrawModal } from './WithdrawModal';
-
 export { default as media } from './media';
+export { default as Queue } from './Status/Queue';
+
