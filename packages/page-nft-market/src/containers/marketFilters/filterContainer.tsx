@@ -6,19 +6,27 @@ import './styles.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
+import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
 
+import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
 
-const { uniqueCollectionIds: envIds } = envConfig;
+import { SESSION_STORAGE_KEYS } from './constants';
+
+const { commission, uniqueCollectionIds } = envConfig;
 
 interface PropTypes {
-  account: string|undefined
-  filterBySeller: (isOnlyMyToken: boolean) => void;
-  changeuniqueCollectionIds: (arr: string[]) => void;
-  collections: NftCollectionInterface[]
-  changePrices: (minPrice: string, maxPrice: string) => void
+  account: string|undefined;
+  allowClearCollections: boolean;
+  allowClearPricesAndSeller: boolean;
+  collections: NftCollectionInterface[];
+  filters: Filters;
+  setAllowClearCollections: (allow: boolean) => void;
+  setAllowClearPricesAndSeller: (allow: boolean) => void;
+  setFilters: (filters: Filters) => void;
+  setUniqueCollectionIds: (collectionIds: string[]) => void;
 }
 
 interface PricesTypes{
@@ -26,22 +34,68 @@ interface PricesTypes{
   maxPrice: string;
 }
 
-const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuniqueCollectionIds, collections, filterBySeller }) => {
+const getFromStorage = (storageKey: string) => {
+  return JSON.parse(sessionStorage.getItem(storageKey) as string) as Filters | boolean | PricesTypes;
+};
+
+const setInStorage = (storageKey: string, data: Filters | boolean | PricesTypes) => {
+  return sessionStorage.setItem(storageKey, JSON.stringify(data));
+};
+
+const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, allowClearPricesAndSeller, collections, filters, setAllowClearCollections, setAllowClearPricesAndSeller, setFilters, setUniqueCollectionIds }) => {
   const { collectionName16Decoder } = useDecoder();
   const { getTokenImageUrl } = useMetadata();
   const [images, setImages] = useState<string[]>([]);
   const [inputChecked, setInputChecked] = useState<string[]>([]);
-  const [isOnlyMyToken, setisOnlyMyToken] = useState(false);
+  const [isOnlyMyToken, setIsOnlyMyToken] = useState(false);
   const [KSMPrices, setKSMPrices] = useState<PricesTypes>({ maxPrice: '', minPrice: '' });
-
   const [isShowCollection, setIsShowCollection] = useState<boolean>(true);
   const [isShowPrice, setIsShowPrice] = useState<boolean>(true);
+  // Data from local storage
+  const storagePrices = getFromStorage(SESSION_STORAGE_KEYS.PRICES) as PricesTypes;
+  const storageFilters = getFromStorage(SESSION_STORAGE_KEYS.FILTERS) as Filters;
+  const areAllCollectionsChecked = getFromStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED) as boolean;
 
-  const [checkedIds, setCheckedids] = useState<string[]>([]);
+  const changePrices = (minPrice: string | undefined, maxPrice: string | undefined) => {
+    const filtersCopy = { ...filters };
+
+    if (minPrice === '') {
+      delete filtersCopy.minPrice;
+    } else {
+      const currentMinPrice = new BN(Number(minPrice) * 10000000000);
+
+      filtersCopy.minPrice = String(currentMinPrice.mul(new BN(10)).div(new BN(1000 + commission * 10))) + '0000';
+    }
+
+    if (maxPrice === '') {
+      delete filtersCopy.maxPrice;
+    } else {
+      const currentMaxPrice = new BN(Number(maxPrice) * 10000000000);
+
+      filtersCopy.maxPrice = String(currentMaxPrice.mul(new BN(10)).div(new BN(1000 + commission * 10))) + '0000';
+    }
+
+    setInStorage(SESSION_STORAGE_KEYS.PRICES, KSMPrices);
+    setFilters({ ...filtersCopy });
+  };
+
+  const filterBySeller = useCallback((onlyMyTokens: boolean) => {
+    if (onlyMyTokens && account) {
+      setFilters({ ...filters, seller: account });
+    } else {
+      const filtersCopy = { ...filters };
+
+      delete filtersCopy.seller;
+      setFilters({ ...filtersCopy });
+    }
+  }, [account, filters, setFilters]);
 
   const clearPrices = () => {
-    setKSMPrices({ maxPrice: '', minPrice: '' });
+    const pricesDefaultValue = { maxPrice: '', minPrice: '' };
+
+    setKSMPrices(pricesDefaultValue);
     changePrices('', '');
+    setInStorage(SESSION_STORAGE_KEYS.PRICES, pricesDefaultValue);
   };
 
   const setKSMPrice: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -55,45 +109,30 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
   };
 
   const handleOnlyMyToken = () => {
-    setisOnlyMyToken(!isOnlyMyToken);
+    setIsOnlyMyToken(!isOnlyMyToken);
     filterBySeller(!isOnlyMyToken);
   };
 
-  const filterCurrent = (id: string) => {
+  const changeUniqueCollectionIds = useCallback((newIds: string[]) => {
+    setUniqueCollectionIds(newIds);
+    setFilters({ ...filters, collectionIds: newIds });
+  }, [filters, setUniqueCollectionIds, setFilters]);
+
+  const filterCurrent = useCallback((id: string) => {
     if (inputChecked.includes(id)) {
       const filteredData = inputChecked.filter((item) => item !== id);
 
       setInputChecked(filteredData);
+      changeUniqueCollectionIds(filteredData);
     } else {
       setInputChecked([...inputChecked, id]);
+      changeUniqueCollectionIds([...inputChecked, id]);
     }
-
-    if (id && checkedIds.length === 0) {
-      changeuniqueCollectionIds([id]);
-      setCheckedids([id]);
-    } else if (!checkedIds.length) {
-      changeuniqueCollectionIds(envIds);
-      setCheckedids(envIds);
-    } else if (!!checkedIds.length && checkedIds.includes(id)) {
-      const _ = checkedIds.filter((item) => item !== id);
-
-      if (_.length > 0) {
-        changeuniqueCollectionIds(_);
-        setCheckedids(_);
-      } else {
-        setCheckedids([]);
-        changeuniqueCollectionIds(envIds);
-      }
-    } else {
-      changeuniqueCollectionIds([...checkedIds, id]);
-      setCheckedids([...checkedIds, id]);
-    }
-  };
+  }, [changeUniqueCollectionIds, inputChecked]);
 
   const clearCheckedValues = () => {
     setInputChecked([]);
-    changeuniqueCollectionIds(envIds);
-    setCheckedids([]);
+    changeUniqueCollectionIds(uniqueCollectionIds);
   };
 
   const updateImageUrl = useCallback(() => {
@@ -107,9 +146,72 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
     });
   }, [collections, getTokenImageUrl]);
 
+  const resetFromFilter = useCallback(() => {
+    if (!filters.maxPrice && !filters.minPrice) {
+      setKSMPrices({ maxPrice: '', minPrice: '' });
+    }
+
+    if (!filters.seller) {
+      setIsOnlyMyToken(false);
+    }
+
+    const filteredCollections = filters.collectionIds;
+
+    if (filteredCollections.length === uniqueCollectionIds.length) {
+      setInputChecked((prevState) => {
+        if (prevState.length === uniqueCollectionIds.length) {
+          return prevState;
+        } else {
+          return [];
+        }
+      });
+    }
+  }, [filters]);
+
   useEffect(() => {
     void updateImageUrl();
   }, [updateImageUrl]);
+
+  useEffect(() => {
+    if (storagePrices && !storagePrices.minPrice && !storagePrices.maxPrice) {
+      resetFromFilter();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetFromFilter]);
+
+  useEffect(() => {
+    storagePrices && setKSMPrices(storagePrices);
+
+    if (storageFilters) {
+      setIsOnlyMyToken(!!storageFilters.seller);
+      areAllCollectionsChecked && setInputChecked(storageFilters.collectionIds);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setInStorage(SESSION_STORAGE_KEYS.FILTERS, filters);
+
+    if (inputChecked.length > 0) {
+      setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, true);
+    } else setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
+
+  useEffect(() => {
+    if (allowClearPricesAndSeller) {
+      setKSMPrices({ maxPrice: '', minPrice: '' });
+      setIsOnlyMyToken(false);
+      setAllowClearPricesAndSeller(false);
+    }
+  }, [allowClearPricesAndSeller, setAllowClearPricesAndSeller]);
+
+  useEffect(() => {
+    if (allowClearCollections) {
+      setInputChecked([]);
+      setAllowClearCollections(false);
+    }
+  }, [allowClearCollections, setAllowClearCollections]);
 
   return (
     <>
@@ -132,9 +234,12 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
           <div className='clear'>
             <div
               className={`clear-title ${inputChecked.length ? 'clear-title-active' : ''}`}
-              onClick={clearCheckedValues}>Clear</div>
+              onClick={clearCheckedValues}
+            >
+              Clear
+            </div>
             <div
-              className={`clear-icon ${isShowCollection ? 'rotate-icon' : ''}`}
+              className={`filter-arrow-icon ${isShowCollection ? 'rotate-icon' : ''}`}
               onClick={setIsShowCollection.bind(null, !isShowCollection)}
             />
           </div>
@@ -158,10 +263,11 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
                     <div className='custom-checkbox'>
                       <div className='checkbox-input'>
                         <input
-                          checked={inputChecked && inputChecked.includes(String(collection.id))}
+                          checked={inputChecked.includes(String(collection.id))}
                           data-current={collection.id}
                           onChange={() => null}
-                          type='checkbox'/>
+                          type='checkbox'
+                        />
                       </div>
                       <div className='checkbox-title'>{collectionName16Decoder(collection.Name)}</div>
                     </div>
@@ -187,7 +293,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
               Clear
             </div>
             <div
-              className={`clear-icon ${isShowPrice ? 'rotate-icon' : ''}`}
+              className={`filter-arrow-icon ${isShowPrice ? 'rotate-icon' : ''}`}
               onClick={setIsShowPrice.bind(null, !isShowPrice)}
             />
           </div>
@@ -199,6 +305,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
                 name='minPrice'
                 onChange= {setKSMPrice}
                 onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
+                onKeyPress={(e) => e.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null}
                 placeholder='Min'
                 type='number'
                 value={KSMPrices.minPrice}
@@ -207,6 +314,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
               <input name='maxPrice'
                 onChange= {setKSMPrice}
                 onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
+                onKeyPress={(e) => e.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null}
                 placeholder='Max'
                 type='number'
                 value={KSMPrices.maxPrice}

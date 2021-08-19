@@ -7,7 +7,6 @@ import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 // import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
-import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
@@ -15,6 +14,7 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { TransferModal } from '@polkadot/react-components';
+import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 
 import BuySteps from './BuySteps';
@@ -25,10 +25,9 @@ const { kusamaDecimals, showMarketActions } = envConfig;
 
 interface NftDetailsProps {
   account: string;
-  setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
-function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
+function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
@@ -50,9 +49,8 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    setShouldUpdateTokens && setShouldUpdateTokens('all');
     history.back();
-  }, [setShouldUpdateTokens]);
+  }, []);
 
   const onSavePrice = useCallback(() => {
     const parts = tokenPriceForSale.split('.');
@@ -66,8 +64,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   const onTransferSuccess = useCallback(() => {
     setShowTransferForm(false);
     sendCurrentUserAction('UPDATE_TOKEN_STATE');
-    setShouldUpdateTokens && setShouldUpdateTokens(collectionId);
-  }, [collectionId, sendCurrentUserAction, setShouldUpdateTokens]);
+  }, [sendCurrentUserAction]);
 
   const closeAskModal = useCallback(() => {
     setReadyToAskPrice(false);
@@ -91,6 +88,10 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
       }
     }
   }, [deposited, escrowAddress, getFee, getKusamaTransferFee, kusamaBalance, tokenAsk]);
+
+  const getMarketPrice = useCallback((price: BN) => {
+    return formatPrice(formatKsmBalance(new BN(price).add(getFee(price))));
+  }, [formatKsmBalance, getFee]);
 
   useEffect(() => {
     void ksmFeesCheck();
@@ -119,7 +120,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
         </svg>
         back
       </a>
-      <Grid className='token-info'>
+      <div className='token-info'>
         { (!collectionInfo || (account && (!kusamaBalance || !balance))) && (
           <Loader
             active
@@ -127,16 +128,16 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
             inline='centered'
           />
         )}
-        <Grid.Row>
-          <Grid.Column width={8}>
+        <div className='token-info--row'>
+          <div className='token-info--row--image'>
             { collectionInfo && (
               <Image
                 className='token-image-big'
                 src={tokenUrl}
               />
             )}
-          </Grid.Column>
-          <Grid.Column width={8}>
+          </div>
+          <div className='token-info--row--attributes'>
             <Header as='h3'>
               {collectionInfo && <span>{hex2a(collectionInfo.TokenPrefix)}</span>} #{tokenId}
             </Header>
@@ -157,7 +158,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
             { (tokenAsk && tokenAsk.price) && (
               <>
                 <Header as={'h2'}>
-                  {formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)))} KSM
+                  {getMarketPrice(tokenAsk.price)} KSM
                 </Header>
                 <p>Fee: {formatKsmBalance(getFee(tokenAsk.price))} KSM, Price: {formatKsmBalance(tokenAsk.price)} KSM</p>
                 {/* { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
@@ -264,9 +265,9 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
               <BuySteps step={transferStep - 3} />
             )}
 
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+          </div>
+        </div>
+      </div>
       { readyToAskPrice && (
         <SetPriceModal
           closeModal={closeAskModal}
